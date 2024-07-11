@@ -1,0 +1,50 @@
+BootStrap: docker
+From: nvcr.io/nvidia/pytorch:24.02-py3
+
+# more info about the base image https://docs.nvidia.com/deeplearning/frameworks/pytorch-release-notes/rel-24-02.html
+
+%post
+    apt-get update -y
+    apt install -y software-properties-common git curl python3.10 python3.10-venv python3.10-dev rsync
+    add-apt-repository ppa:deadsnakes/ppa -y
+    update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.10 1
+    update-alternatives --install /usr/bin/python python /usr/bin/python3.10 1
+    curl -sSL https://bootstrap.pypa.io/get-pip.py | python3.10
+    apt-get clean && rm -rf /var/lib/apt/lists/*
+
+    
+    # I had some issues with this package in axolotl
+    # pip3 uninstall transformer-engine -y
+    
+    # can be needed for flash attnt
+    # python3.10 -m pip install packaging ninja   
+
+    # install packages here
+    pip3 install pandas==2.2.0
+    pip3 install hydra-core
+    pip3 install rootutils
+    pip3 install omegaconf
+    pip3 install packaging==23.2
+    pip3 install gekko==1.0.6
+    pip3 install evaluate==0.4.1
+    pip3 install vaderSentiment==3.3.2
+    pip3 install vllm
+    pip3 install tiktoken
+    pip3 install prometheus_client==0.19.0
+    
+    # install or reinstall important packages last (pytorch, flash-attn)
+    # pip3 install flash-attn --no-build-isolation
+    python3.10 -m pip freeze
+    which pip
+
+%environment
+    # Set any environment variables if required
+
+%runscript
+    # Add a runscript if needed
+
+%labels
+    # Add labels for metadata
+    Author = Ashwin Kumar Gururajan, Enrique Lopez Cuena, Jordi Bayarri Planas
+    Institution = Barcelona Supercomputing Center
+

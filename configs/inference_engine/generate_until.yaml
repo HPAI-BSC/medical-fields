@@ -1,0 +1,6 @@
+_target_: src.inference.Inference
+vllm_params: ${model.vllm}
+sampling_params: ${model.sampling_params}
+prompt: ${prompt}
+options_file: ${medical_fields_file}
+name: generate_until

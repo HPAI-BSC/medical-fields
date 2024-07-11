@@ -1,0 +1,18 @@
+# https://github.com/vllm-project/vllm/blob/main/vllm/entrypoints/llm.py
+defaults:
+  - _self_ 
+  - model: Llama-3-70B-Instruct
+  - datasets: medical_tasks
+  - hydra: default
+  - prompt: prompt-cot
+  - inference_engine: generate_until
+  - merged_dataset: default
+
+medical_fields: medical_fields_35_v2
+num_samples: null 
+test_name: v0
+
+# Do not change
+medical_fields_file: configs/medical_fields/${medical_fields}.txt
+save_folder: "/gpfs/projects/bsc20/bsc020561/medical-fields/${model.name}_${prompt.name}_${inference_engine.name}_all-logprobs_${test_name}"
+log_level: DEBUG

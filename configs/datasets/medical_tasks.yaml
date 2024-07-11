@@ -1,0 +1,130 @@
+
+datasets_dir: /gpfs/projects/bsc70/heka/datasets/medical_categories
+
+datasets:
+  - name: CareQA
+    question: question
+    id: unique_id
+    op1: op1
+    op2: op2
+    op3: op3
+    op4: op4
+    cop: cop
+    1: 1
+    2: 2
+    3: 3
+    4: 4
+    file: ${datasets.datasets_dir}/CareQA/CareQA_en.json
+
+
+  - name: headqa_test
+    question: data.Question
+    id: id
+    op1: data.Options.A
+    op2: data.Options.B
+    op3: data.Options.C
+    op4: data.Options.D
+    cop: "data.Correct Option"
+    1: A
+    2: B
+    3: C
+    4: D
+    file: ${datasets.datasets_dir}/headqa/test.json
+
+  - name: medmcqa_validation
+    question: question
+    id: id
+    op1: opa
+    op2: opb
+    op3: opc
+    op4: opd
+    cop: cop
+    1: 0
+    2: 1
+    3: 2
+    4: 3
+    file: ${datasets.datasets_dir}/medmcqa/data/validation-00000-of-00001.json
+
+  - name: medqa_4options_test
+    question: sent1
+    id: id
+    op1: ending0
+    op2: ending1
+    op3: ending2
+    op4: ending3
+    cop: label
+    1: 0
+    2: 1
+    3: 2
+    4: 3
+    file: ${datasets.datasets_dir}/MedQA-USMLE-4-options-hf/test.json
+    
+  - name: mmlu_anatomy_test
+    question: data.Question
+    id: id
+    op1: data.Options.A
+    op2: data.Options.B
+    op3: data.Options.C
+    op4: data.Options.D
+    cop: "data.Correct Option"
+    1: A
+    2: B
+    3: C
+    4: D
+    file: ${datasets.datasets_dir}/mmlu_anatomy/data/test-00000-of-00001.json
+    
+  - name: mmlu_clinical_knowledge_test
+    question: data.Question
+    id: id
+    op1: data.Options.A
+    op2: data.Options.B
+    op3: data.Options.C
+    op4: data.Options.D
+    cop: "data.Correct Option"
+    1: A
+    2: B
+    3: C
+    4: D
+    file: ${datasets.datasets_dir}/mmlu_clinical_knowledge/data/test-00000-of-00001.json
+    
+  - name: mmlu_college_medicine_test
+    question: data.Question
+    id: id
+    op1: data.Options.A
+    op2: data.Options.B
+    op3: data.Options.C
+    op4: data.Options.D
+    cop: "data.Correct Option"
+    1: A
+    2: B
+    3: C
+    4: D
+    file: ${datasets.datasets_dir}/mmlu_college_medicine/data/test-00000-of-00001.json
+    
+  - name: mmlu_medical_genetics_test
+    question: data.Question
+    id: id
+    op1: data.Options.A
+    op2: data.Options.B
+    op3: data.Options.C
+    op4: data.Options.D
+    cop: "data.Correct Option"
+    1: A
+    2: B
+    3: C
+    4: D
+    file: ${datasets.datasets_dir}/mmlu_medical_genetics/data/test-00000-of-00001.json
+    
+  - name: mmlu_professional_medicine_test
+    question: data.Question
+    id: id
+    op1: data.Options.A
+    op2: data.Options.B
+    op3: data.Options.C
+    op4: data.Options.D
+    cop: "data.Correct Option"
+    1: A
+    2: B
+    3: C
+    4: D
+    file: ${datasets.datasets_dir}/mmlu_professional_medicine/data/test-00000-of-00001.json

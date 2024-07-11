@@ -1,0 +1,11 @@
+pandas==2.2.0
+pip3 install hydra-core
+pip3 install rootutils
+pip3 install omegaconf
+pip3 install packaging==23.2
+pip3 install gekko==1.0.6
+pip3 install evaluate==0.4.1
+pip3 install vaderSentiment==3.3.2
+pip3 install vllm
+pip3 install tiktoken
+pip3 install prometheus_client==0.19.0
