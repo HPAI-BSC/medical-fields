@@ -42,10 +42,10 @@ pip install -r requirements.txt
 To use the classification model, follow these steps:
 
 1. **Prepare your dataset:**
-    - Include the links to the datasets from HuggingFace in the `configs/datasets` configuration file. Make sure each dataset is properly listed and configured.
+    - Include the datasets from HuggingFace in the `configs/datasets` configuration file. Make sure each dataset is properly listed and configured.
 
 2. **Run the main script:**
-    - Use the main script to download the datasets, classify the questions, and create the merged dataset:
+    - Use the main script to dclassify the questions and create the merged dataset:
 
     ```
     python src/main.py --config configs/main.yaml
