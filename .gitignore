@@ -7,3 +7,4 @@ slurm_output
 .gitlab-ci.yml
 sbatch_launch_mn5.sh
 sh_test.sh
+venv
