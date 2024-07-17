@@ -1,6 +1,6 @@
 # Medical Question Classification
 
-This project aims to classify medical questions into their respective medical fields using LLMs.
+This project aims to classify medical questions into their respective medical specialities using LLMs.
 
 ## Table of Contents
 
@@ -12,9 +12,9 @@ This project aims to classify medical questions into their respective medical fi
 
 ## Project Overview
 
-The primary goal of this project is to develop a model that can accurately classify medical questions into predefined medical fields. This is particularly useful for organizing large datasets of medical questions and for improving the efficiency of medical information retrieval systems.
+The primary goal of this project is to develop a model that can accurately classify medical questions into predefined medical specialities. This is particularly useful for organizing large datasets of medical questions and for improving the efficiency of medical information retrieval systems.
 
-This project downloads datasets from HuggingFace, classifies the questions into the medical fields specified in the configuration file, and creates a merged dataset. The merged dataset includes the original questions, their options, the correct option, the predicted medical field, the chain of thought (CoT) for the medical field, and the log probability of the CoT medical field.
+This project downloads datasets from HuggingFace, classifies the questions into the medical specialities specified in the configuration file, and creates a merged dataset. The merged dataset includes the original questions, their options, the correct option, the predicted medical field, the chain of thought (CoT) for the medical field, and the log probability of the CoT medical field.
 
 ## Directory Structure
 
@@ -52,7 +52,7 @@ To use the classification model, follow these steps:
     ```
 
 3. **Configuration details:**
-    - The `main.yaml` configuration file should include all necessary parameters for downloading the datasets, specifying the medical fields, and any other required configurations. Ensure this file is correctly set up before running the script.
+    - The `main.yaml` configuration file should include all necessary parameters for downloading the datasets, specifying the medical specialities, and any other required configurations. Ensure this file is correctly set up before running the script.
 
 4. **Prompt Configuration:**
     - The prompt configuration allows for chain of thought (CoT) and few-shot learning setups. These settings can be found and adjusted in the `configs/prompt` directory.
