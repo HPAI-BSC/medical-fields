@@ -23,23 +23,34 @@ from inference import Inference
 
 rootutils.setup_root(__file__, indicator="project-root", pythonpath=True)
 
-def save_results(dataset: DataFrame, save_file: str):
-    data = dataset.reset_index(drop=True).to_dict('records')
-    save_dataset(save_file, data)
+def save_results(dataset: DataFrame, save_folder: str, dataset_name: str, options: List[str]):
+    for option in options: 
+        # Check if data is already processed
+        output_file = os.path.join(save_folder, f"{dataset_name}_{option}.json")
+        if os.path.isfile(output_file):
+            continue
+        
+        tmp_dataset = dataset[dataset["medical_field"]== option]      
+        filtered_dataset = tmp_dataset.reset_index(drop=True).to_dict('records')
+        save_dataset(output_file, filtered_dataset)
 
-def merge_results(save_folder: str):
-    save_file = os.path.join(save_folder, 'medical_fields.json')
-    if os.path.exists(save_file):
-        return
-    combined_datasets = []
 
-    for filename in os.listdir(save_folder):
-        if filename.endswith('.json'):
-            with open(os.path.join(save_folder, filename), 'r') as file:
-                combined_datasets.append(json.load(file))
-    combined_datasets = list(itertools.chain.from_iterable(combined_datasets))
-    save_dataset(save_file, combined_datasets)
-    print('All JSON files have been merged into medical_fields.json')
+def join_results_by_field(save_folder: str, options: List[str]):
+    """Join results by field."""
+    results_folder = os.path.join(save_folder, "results")
+    os.makedirs(results_folder, exist_ok=True)
+    for option in options:
+        output_file = os.path.join(results_folder, f"{option}.json")
+        if os.path.exists(output_file):
+            return
+        combined_datasets = []
+        for filename in os.listdir(save_folder):
+            if filename.endswith(f'_{option}.json'):
+                with open(os.path.join(save_folder, filename), 'r') as file:
+                    combined_datasets.append(json.load(file))
+        combined_datasets = list(itertools.chain.from_iterable(combined_datasets))
+        save_dataset(output_file, combined_datasets)
+
 
 
 def run_inference(
@@ -47,19 +58,24 @@ def run_inference(
     inference_engine: Inference,
     datasets: Union[ListConfig, DictConfig],
     num_samples: Optional[int],
-    columns: List[str], 
-    options: List[str]
+    dataset_columns: List[str], 
+    dataset_options: List[str]
 ):
 
     # Iterate over datasets
+    medical_specialities = inference_engine.options
     for dataset_config in datasets:
         dataset_name = dataset_config.name
         logging.info(f" Evaluating dataset: {dataset_name}")
-        dataset = load_dataset(dataset_config, columns, options).iloc[:num_samples]
-
-        # Check if data is already processed
-        output_file = os.path.join(save_folder, f"{dataset_name}.json")
-        if os.path.isfile(output_file):
+        
+        dataset = load_dataset(dataset_config, dataset_columns, dataset_options).iloc[:num_samples]
+        # Check if all files already exist
+        all_files_exist = all(
+            os.path.isfile(os.path.join(save_folder, f"{dataset_name}_{option}.json"))
+            for option in medical_specialities
+        )
+        if all_files_exist:
+            logging.info(f"All result files for {dataset_name} already exist. Skipping inference.")
             continue
         
         # Run inference
@@ -67,8 +83,8 @@ def run_inference(
         dataset["medical_field"] = predictions
         dataset["cot_medical_field"] = cot_prediction
         dataset["cumulative_logprob_cot_medical_field"] = logprobs
-        save_results(dataset, output_file)
-    merge_results(save_folder)
+        save_results(dataset, save_folder, dataset_name, medical_specialities)
+    join_results_by_field(save_folder, medical_specialities)
 
 
 @hydra.main()
