@@ -7,7 +7,6 @@ import re
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'src')))
 from inference import Inference
 
-
 class TestInference(unittest.TestCase):
 
     def setUp(self):
@@ -22,20 +21,22 @@ class TestInference(unittest.TestCase):
             "regex": r"The category is: (?P<category>\w+)"
         })
         self.options_file = "tests/options.txt"
+        self.progress_file = "tests/progress.json"
 
         self.mock_dependencies()
-        self.inference = Inference(self.vllm_params, self.sampling_params, self.prompt, self.options_file)
+        self.inference = Inference(self.vllm_params, self.sampling_params, self.prompt, self.options_file, progress_file=self.progress_file)
         self.mock_tokenizer_vocabulary()
-
 
     def tearDown(self):
         self.stop_mocks()
+        if os.path.exists(self.inference.progress_file):
+            os.remove(self.inference.progress_file)
 
     def mock_dependencies(self):
         """Mocks external dependencies required for the test."""
         self.mock_model = patch('inference.LLM').start()
         self.mock_tokenizer = patch('inference.get_tokenizer').start()
-
+        patch('inference.load_txt_as_array', return_value=["cardiology", "neurology"]).start()
 
     def mock_tokenizer_vocabulary(self):
         token_mapping = {
@@ -55,12 +56,13 @@ class TestInference(unittest.TestCase):
         """Stops all active mocks."""
         self.mock_model.stop()
         self.mock_tokenizer.stop()
+        patch.stopall()
 
     def test_initialization(self):
         self.assertEqual(self.inference.model, self.mock_model())
         self.assertEqual(self.inference.tokenizer("What")["input_ids"][0], 1)
         self.assertEqual(self.inference.options, ["cardiology", "neurology"])
-        self.assertEqual(self.inference.prompt.system_prompt, "This is a test for cardiology, neurology")
+        self.assertEqual(self.inference.prompt.system_prompt, "This is a test for cardiology,neurology")
         self.assertIsNotNone(self.inference.sampling_params)
         self.assertIsNotNone(self.inference.pattern)
 
@@ -68,7 +70,7 @@ class TestInference(unittest.TestCase):
         question = "What is cardiology?"
         chat_template = self.inference.generate_chat_template(question)
         expected_chat_template = [
-            {'role': 'system', 'content': 'This is a test for cardiology, neurology'}, 
+            {'role': 'system', 'content': 'This is a test for cardiology,neurology'}, 
             {'role': 'user', 'content': 'What are the symptoms of flu?'}, 
             {'role': 'assistant', 'content': 'Fever, cough, sore throat'}, 
             {'role': 'user', 'content': 'What is cardiology?'}
@@ -89,18 +91,32 @@ class TestInference(unittest.TestCase):
     def test_predict(self):
         self.mock_tokenizer_vocabulary()
         input_data = ["What is cardiology?", "What is neurology?"]
-        self.inference.get_tokens_without_start = self.inference.get_tokens
         mock_outputs = [
-            MagicMock(outputs=[MagicMock(text="The answer is easy. The category is: cardiology.", cumulative_logprobs=-500)]),
-            MagicMock(outputs=[MagicMock(text="The answer is difficult. The category is: neurology.", cumulative_logprobs=-100)])
+            MagicMock(outputs=[MagicMock(text="The answer is easy. The category is: cardiology.", cumulative_logprob=-500)]),
+            MagicMock(outputs=[MagicMock(text="The answer is difficult. The category is: neurology.", cumulative_logprob=-100)])
         ]
 
+
         self.mock_model.return_value.generate.return_value = mock_outputs
-        preds, logprobs = self.inference.predict(input_data)
-        self.assertEqual(preds, ("cardiology", "neurology"))
-        self.assertEqual(logprobs, (-500, -100))
+        preds, logprobs, cot = self.inference.predict(input_data)
+        self.assertEqual(tuple(preds), ("cardiology", "neurology"))
+        self.assertEqual(tuple(logprobs), (-500, -100))
+        self.assertEqual(tuple(cot), (
+            "The answer is easy. The category is: cardiology.",
+            "The answer is difficult. The category is: neurology."
+        ))
 
+    def test_save_and_load_progress(self):
+        preds = ["cardiology"]
+        logprobs = [-500]
+        cot = ["The answer is easy. The category is: cardiology."]
+        self.inference.save_progress(preds, logprobs, cot, 1)
 
+        loaded_preds, loaded_logprobs, loaded_cot, processed = self.inference.load_progress()
+        self.assertEqual(loaded_preds, preds)
+        self.assertEqual(loaded_logprobs, logprobs)
+        self.assertEqual(loaded_cot, cot)
+        self.assertEqual(processed, 1)
 
 if __name__ == '__main__':
     unittest.main()
