@@ -1,0 +1,139 @@
+
+datasets_dir: /gpfs/projects/bsc70/heka/datasets/medical_categories_hf
+target_split: test
+datasets:
+  - name: CareQA
+    question: question
+    split: test
+    id: unique_id
+    op1: op1
+    op2: op2
+    op3: op3
+    op4: op4
+    cop: cop
+    1: 1
+    2: 2
+    3: 3
+    4: 4
+    url: https://huggingface.co/datasets/HPAI-BSC/CareQA/resolve/main/CareQA_en.json
+
+
+  - name: headqa
+    split: test
+    question: data.Question
+    id: id
+    op1: data.Options.A
+    op2: data.Options.B
+    op3: data.Options.C
+    op4: data.Options.D
+    cop: "data.Correct Option"
+    1: A
+    2: B
+    3: C
+    4: D
+    url: https://huggingface.co/datasets/openlifescienceai/headqa/resolve/main/test.json
+
+  - name: medmcqa
+    split: validation
+    question: question
+    id: id
+    op1: opa
+    op2: opb
+    op3: opc
+    op4: opd
+    cop: cop
+    1: 0
+    2: 1
+    3: 2
+    4: 3
+    url: https://huggingface.co/datasets/openlifescienceai/medmcqa/resolve/main/data/validation-00000-of-00001.parquet
+
+  - name: medqa_4options
+    split: test
+    question: sent1
+    id: id
+    op1: ending0
+    op2: ending1
+    op3: ending2
+    op4: ending3
+    cop: label
+    1: 0
+    2: 1
+    3: 2
+    4: 3
+    url: https://huggingface.co/datasets/GBaker/MedQA-USMLE-4-options-hf/resolve/main/test.json
+    
+  - name: mmlu_anatomy
+    split: test
+    question: data.Question
+    id: id
+    op1: data.Options.A
+    op2: data.Options.B
+    op3: data.Options.C
+    op4: data.Options.D
+    cop: "data.Correct Option"
+    1: A
+    2: B
+    3: C
+    4: D
+    url: https://huggingface.co/datasets/openlifescienceai/mmlu_anatomy/resolve/main/data/test-00000-of-00001.parquet
+    
+  - name: mmlu_clinical_knowledge
+    split: test
+    question: data.Question
+    id: id
+    op1: data.Options.A
+    op2: data.Options.B
+    op3: data.Options.C
+    op4: data.Options.D
+    cop: "data.Correct Option"
+    1: A
+    2: B
+    3: C
+    4: D
+    url: https://huggingface.co/datasets/openlifescienceai/mmlu_clinical_knowledge/resolve/main/data/test-00000-of-00001.parquet
+    
+  - name: mmlu_college_medicine
+    split: test
+    question: data.Question
+    id: id
+    op1: data.Options.A
+    op2: data.Options.B
+    op3: data.Options.C
+    op4: data.Options.D
+    cop: "data.Correct Option"
+    1: A
+    2: B
+    3: C
+    4: D
+    url: https://huggingface.co/datasets/openlifescienceai/mmlu_college_medicine/resolve/main/data/test-00000-of-00001.parquet
+
+  - name: mmlu_medical_genetics
+    split: test
+    question: data.Question
+    id: id
+    op1: data.Options.A
+    op2: data.Options.B
+    op3: data.Options.C
+    op4: data.Options.D
+    cop: "data.Correct Option"
+    1: A
+    2: B
+    3: C
+    4: D
+    url: https://huggingface.co/datasets/openlifescienceai/mmlu_medical_genetics/resolve/main/data/test-00000-of-00001.parquet
+
+  - name: mmlu_professional_medicine
+    split: test
+    question: data.Question
+    id: id
+    op1: data.Options.A
+    op2: data.Options.B
+    op3: data.Options.C
+    op4: data.Options.D
+    cop: "data.Correct Option"
+    1: A
+    2: B
+    3: C
+    4: D
+    url: https://huggingface.co/datasets/openlifescienceai/mmlu_professional_medicine/resolve/main/data/test-00000-of-00001.parquet

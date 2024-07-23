@@ -6,6 +6,7 @@ import pandas as pd
 import json
 import sys
 import numpy as np
+import requests
 from typing import List, Tuple
 
 def setup_logging(log_level:str):
@@ -21,6 +22,38 @@ def load_txt_as_array(file):
 def load_config(config_file:str):
     """Load config file as omegaconf"""
     return OmegaConf.load(config_file)
+
+def ensure_dir(file_path):
+    """
+    Ensures that the directory for the given file path exists.
+    If it doesn't exist, it creates it.
+    """
+    directory = os.path.dirname(file_path)
+    if not os.path.exists(directory):
+        os.makedirs(directory)
+
+def download_dataset(url: str, save_folder: str):
+    """Download dataset from url to save_file."""
+    dataset_file = os.path.join(save_folder, os.path.relpath(url, start="https://huggingface.co/datasets"))
+    ensure_dir(dataset_file)
+    if os.path.exists(dataset_file):
+        return dataset_file
+    
+    response = requests.get(url)
+    if response.status_code == 200:
+        with open(dataset_file, 'wb') as file:
+            file.write(response.content)
+        print(f"File saved to {dataset_file}")
+    else:
+        print(f"Failed to download file. Status code: {response.status_code}")
+    return dataset_file
+
+
+def load_parquet(parquet_path:str):
+    """Load parquet data from a file."""
+    df = pd.read_parquet(parquet_path)
+    df = expand_columns(df)
+    return df
 
 def load_json(json_path:str):
     """Load JSON data from a file."""
@@ -47,17 +80,13 @@ def load_json(json_path:str):
         return data
 
 
-def save_csv(csv_path, df):
-    df.to_csv(csv_path, sep=",")
-
-
 def save_dataset(save_file:str, data:pd.DataFrame):
     """Save output data to a json list of dicts."""
     with open(save_file, 'w') as outfile:
         json.dump(data, outfile, indent=4)
 
 
-def create_folder(folder_path):
+def create_dir(folder_path):
     """Create folder if does not exist yet"""
     if not os.path.exists(folder_path):
         logging.info("Creating save folder at %s", folder_path)
@@ -65,37 +94,44 @@ def create_folder(folder_path):
     else:
         logging.info("Save folder already exists: %s", folder_path)
 
-
-def get_nested(dict_, keys):
-    """Recursive funtion to access nested dictionaries"""
-    if len(keys) == 1:
-        return dict_[keys[0]]
-    return get_nested(dict_[keys[0]], keys[1:])
-
 def reverse(mylist: List):
     return list(reversed(mylist))
 
-def load_partial_results(results: np.ndarray, save_file: str) -> Tuple[np.ndarray, int]:
-    """Load partial results from a file if it exists."""
-    if os.path.isfile(save_file):
-        partial_results = pd.read_csv(save_file).values
-        num_options_done = partial_results.shape[1]
-        results[:, :num_options_done] = partial_results
+def flatten(data, parent_key='', sep='.'):
+    items = []
+    if isinstance(data, dict):
+        for k, v in data.items():
+            new_key = f"{parent_key}{sep}{k}" if parent_key else k
+            items.extend(flatten(v, new_key, sep=sep).items())
+    elif isinstance(data, (list, np.ndarray)):
+        for i, v in enumerate(data):
+            new_key = f"{parent_key}{sep}{i}" if parent_key else str(i)
+            items.extend(flatten(v, new_key, sep=sep).items())
     else:
-        num_options_done = 0
-    return results, num_options_done
+        items.append((parent_key, data))
+    return dict(items)
 
-def save_partial_results(results: np.ndarray, options: List[str], idx_option: int, save_file: str) -> None:
-    """Save intermediate results."""
-    pd.DataFrame(results[:, :idx_option + 1], columns=options[:idx_option + 1]).to_csv(save_file, index=False)
+def expand_columns(df):
+    for col in df.columns:
+        if df[col].apply(lambda x: isinstance(x, (dict, list))).any():
+            expanded_data = df[col].apply(lambda x: pd.Series(flatten(x)))
+            expanded_data.columns = [f"{col}.{sub_col}" for sub_col in expanded_data.columns]
+            df = pd.concat([df.drop(columns=[col]), expanded_data], axis=1)
+    return df
 
-
-def load_dataset(dataset_config: DictConfig, columns: List[str], options: List[str]):
-    dataset_cols = {dataset_config[col]: col for col in columns}
-    dataset_options = {dataset_config[op]: op for op in options}
-    data = pd.json_normalize(load_json(dataset_config["file"]))
+def load_dataset(dataset_file:str):
+    if dataset_file.endswith(".json"):
+        return pd.json_normalize(load_json(dataset_file))
+    elif dataset_file.endswith(".parquet"):
+        return load_parquet(dataset_file)
+    
+def process_dataset(dataset_file:str, dataset_name: str, split: str, dataset_cols: DictConfig, dataset_options: DictConfig):
+    data = load_dataset(dataset_file)
     data = data.rename(columns=dataset_cols)
     data = data[list(dataset_cols.values())]
     data["cop"] = data["cop"].map(dataset_options)
-    data["dataset"] = dataset_config['name']
+    data["dataset"] = dataset_name
+    data["split"] = split
+    if "id" not in data.columns:
+        data["id"] = range(len(data))
     return data

@@ -1,0 +1,65 @@
+
+datasets_dir: /gpfs/projects/bsc70/heka/datasets/medical_categories_hf
+target_split: train
+datasets:
+
+  - name: mmlu
+    split: train
+    question: train.question
+    op1: train.choices.0
+    op2: train.choices.1
+    op3: train.choices.2
+    op4: train.choices.3
+    cop: train.answer
+    1: 0
+    2: 1
+    3: 2
+    4: 3
+    url: https://huggingface.co/datasets/cais/mmlu/resolve/main/auxiliary_train/train-00000-of-00001.parquet
+    
+  - name: headqa
+    split: train
+    question: data.Question
+    id: id
+    op1: data.Options.A
+    op2: data.Options.B
+    op3: data.Options.C
+    op4: data.Options.D
+    cop: "data.Correct Option"
+    1: A
+    2: B
+    3: C
+    4: D
+    url: https://huggingface.co/datasets/openlifescienceai/headqa/resolve/main/train.json
+
+  - name: medmcqa
+    split: train
+    question: question
+    id: id
+    op1: opa
+    op2: opb
+    op3: opc
+    op4: opd
+    cop: cop
+    1: 0
+    2: 1
+    3: 2
+    4: 3
+    url: https://huggingface.co/datasets/openlifescienceai/medmcqa/resolve/main/data/train-00000-of-00001.parquet
+
+  - name: medqa_4options
+    split: train
+    question: sent1
+    id: id
+    op1: ending0
+    op2: ending1
+    op3: ending2
+    op4: ending3
+    cop: label
+    1: 0
+    2: 1
+    3: 2
+    4: 3
+    url: https://huggingface.co/datasets/GBaker/MedQA-USMLE-4-options-hf/resolve/main/train.json
+    
+
