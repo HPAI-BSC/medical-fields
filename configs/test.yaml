@@ -2,7 +2,7 @@
 defaults:
   - _self_ 
   - model: Mistral-7B-v0.1
-  - datasets: medical_tasks 
+  - datasets: medical_tasks_test
   - hydra: default
   - prompt: prompt-cot
   - inference_engine: generate_until
@@ -10,8 +10,9 @@ defaults:
 
 medical_fields: medical_fields_5
 num_samples: 50
-
+version: v0
+block_size: 2
 # Do not change
 medical_fields_file: configs/medical_fields/${medical_fields}.txt
-save_folder: "/home/bsc/bsc020561/medical-fields-vllm/output/${model.name}_${prompt.name}_${inference_engine.name}"
+save_folder: "/gpfs/projects/bsc20/bsc020561/medical-fields/${model.name}_${prompt.name}_${version}"
 log_level: DEBUG

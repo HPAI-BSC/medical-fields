@@ -2,7 +2,7 @@
 defaults:
   - _self_ 
   - model: Llama-3-70B-Instruct
-  - datasets: medical_tasks
+  - datasets: medical_tasks_test
   - hydra: default
   - prompt: prompt-cot
   - inference_engine: generate_until
@@ -10,9 +10,10 @@ defaults:
 
 medical_fields: medical_fields_35_v2
 num_samples: null 
-test_name: v0
+version: v0
+block_size: 5000
 
 # Do not change
 medical_fields_file: configs/medical_fields/${medical_fields}.txt
-save_folder: "/gpfs/projects/bsc20/bsc020561/medical-fields/${model.name}_${prompt.name}_${inference_engine.name}_all-logprobs_${test_name}"
-log_level: DEBUG
+save_folder: "/gpfs/projects/bsc70/hpai/storage/data/heka/medical-fields/${model.name}_${prompt.name}_${version}"
+log_level: INFO

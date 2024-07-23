@@ -15,4 +15,4 @@ fewshot_examples:
     answer: "The question is unrelated to medical fields and does not fit into any medical category. The category is: None"
   - question: "Waht are l"
     answer: "The question is incomplete and contains significant typos, making it unclear and impossible to categorize. The category is: None"
-regex: "The category is: (?P<category>\\w+)"
+regex: "The category is: (?P<category>\\w+)" # mantain category
